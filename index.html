@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumber Jack Game</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #87CEEB;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      background-color: #f0f0f0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Make the canvas responsive
+  function resizeCanvas() {
+    const scale = Math.min(window.innerWidth / 800, window.innerHeight / 600);
+    canvas.style.width = `${800 * scale}px`;
+    canvas.style.height = `${600 * scale}px`;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  let lumberjackImage = new Image();
+  let treeImage = new Image();
+  lumberjackImage.src = 'lumberjack.png';
+  treeImage.src = 'tree.png';
+
+  class Lumberjack {
+    constructor() {
+      this.x = 50;
+      this.y = canvas.height / 2;
+    }
+
+    draw() {
+      ctx.drawImage(lumberjackImage, this.x, this.y);
+    }
+  }
+
+  class Tree {
+    constructor() {
+      this.x = canvas.width - 200;
+      this.y = Math.floor(Math.random() * (canvas.height - treeImage.height));
+    }
+
+    draw() {
+      ctx.drawImage(treeImage, this.x, this.y);
+    }
+  }
+
+  let lumberjack = new Lumberjack();
+  let trees = [];
+  let score = 0;
+  let gameOver = false;
+
+  for (let i = 0; i < 3; i++) {
+    trees.push(new Tree());
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    lumberjack.draw();
+
+    for (let tree of trees) {
+      tree.draw();
+    }
+
+    ctx.font = '24px Arial';
+    ctx.fillStyle = 'black';
+    ctx.fillText(`Score: ${score}`, 20, 40);
+  }
+
+  function collisionDetection(tree) {
+    let dx = lumberjack.x - tree.x;
+    let dy = lumberjack.y - tree.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+
+    let sumOfRadii = lumberjackImage.width / 2 + treeImage.width / 2;
+    return distance < sumOfRadii;
+  }
+
+  function chopTree() {
+    if (gameOver) return;
+
+    let tree = trees.shift();
+    if (collisionDetection(tree)) {
+      score += 1;
+    } else {
+      gameOver = true;
+      ctx.font = '48px Arial';
+      ctx.fillStyle = 'red';
+      ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2);
+    }
+
+    trees.push(new Tree());
+    draw();
+  }
+
+  function handleInput() {
+    chopTree();
+  }
+
+  // Update input handling for both keyboard and touch events
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+      handleInput();
+    }
+  });
+
+  canvas.addEventListener('touchstart', (event) => {
+    event.preventDefault();
+    handleInput();
+  });
+
+  draw();
+</script>
+</body>
+</html>
+
