@@ -1,62 +1,114 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <!-- Уже существующий код -->
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Test Telegram WebApps API</title>
+   <script src="https://telegram.org/js/telegram-web-app.js"></script> <!--Подключаем скрипт от телеграм-->
+
+   <style>
+      body{
+         color: var(--tg-theme-text-color);
+         background: var(--tg-theme-bg-color);
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         font-size: 18px;
+      }
+
+      .hint{
+         color: var(--tg-theme-hint-color);
+      }
+
+      .link{
+         color: var(--tg-theme-link-color);
+      }
+
+      .button{
+         background: var(--tg-theme-button-color);
+         color: var(--tg-theme-button-text-color);
+         border: none;
+         font-size: 18px;
+      }
+
+      .button:not(:last-child){
+         margin-bottom: 20px
+      }
+
+      #usercard{
+         text-align: center;
+      }
+   </style>
 </head>
+
 <body>
-    <!-- Уже существующий код -->
-
-    <div class="container mt-4">
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4" id="product-container">
-            <!-- Пример товара -->
-            <div class="col mb-4">
-                <div class="card h-100">
-                    <img src="https://via.placeholder.com/150x150" class="card-img-top" alt="Товар">
-                    <div class="card-body">
-                        <h5 class="card-title">Товар 1</h5>
-                        <p class="card-text">Описание товара</p>
-                        <div class="mb-3">
-                            <label for="size-1" class="form-label">Размер</label>
-                            <select class="form-select" id="size-1">
-                                <option selected>Выберите размер</option>
-                                <option value="1">S</option>
-                                <option value="2">M</option>
-                                <option value="3">L</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="quantity-1" class="form-label">Количество</label>
-                            <input type="number" class="form-control" id="quantity-1" value="1">
-                        </div>
-                        <button type="button" class="btn btn-primary">Добавить в корзину</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Здесь добавьте еще 7 позиций товаров, заменив цифры в id и номера товаров -->
-        </div>
-    </div>
-
-    <!-- Кнопка открытия корзины -->
-    <div class="fixed-bottom d-flex justify-content-end p-3">
-        <button type="button" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#cart-offcanvas" aria-controls="cart-offcanvas">Открыть корзину</button>
-    </div>
-
-    <!-- Боковая панель корзины -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="cart-offcanvas">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title">Корзина</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
-        </div>
-        <div class="offcanvas-body">
-            <!-- Здесь будут добавляться товары -->
-            <div class="mb-3">
-                <label for="total" class="form-label">Общая сумма</label>
-                <input type="text" class="form-control" id="total" value="0" readonly>
-            </div>
-            <button type="button" class="btn btn-primary">Оформить заказ</button>
-        </div>
-    </div>
-
-    <!-- Уже существующий код -->
+   <div id="usercard"> <!--Карта профиля, человека, который к нам обратился-->
+   </div>
+   <p>Just text</p> <!--Просто текст для проверки-->
+   <a class="link" href="https://mihailgok.ru">Link</a> <!--Просто ссылка для проверки-->
+   <p class="hint">Some little hint</p> <!--Просто текст-подсказка для проверки-->
+   <button id="btn" class="button">Show/Hide Main Button</button> <!--Кнопка, чтобы скрыть / показать основную кнопку-->
+   <button id="btnED" class="button">Enable/Disable Main Button</button> <!--Кнопка, чтобы сделать кнопку активной/неактивной-->
 </body>
+
+<script>
+   let tg = window.Telegram.WebApp; //получаем объект webapp телеграма 
+
+   tg.expand(); //расширяем на все окно  
+
+   tg.MainButton.text = "Changed Text"; //изменяем текст кнопки 
+   tg.MainButton.setText("Changed Text1"); //изменяем текст кнопки иначе
+   tg.MainButton.textColor = "#F55353"; //изменяем цвет текста кнопки
+   tg.MainButton.color = "#143F6B"; //изменяем цвет бэкграунда кнопки
+   tg.MainButton.setParams({"color": "#143F6B"}); //так изменяются все параметры
+
+   let btn = document.getElementById("btn"); //получаем кнопку скрыть/показать 
+
+   btn.addEventListener('click', function(){ //вешаем событие на нажатие html-кнопки
+      if (tg.MainButton.isVisible){ //если кнопка показана 
+         tg.MainButton.hide() //скрываем кнопку 
+      }
+      else{ //иначе
+         tg.MainButton.show() //показываем 
+      }
+   });
+
+   let btnED = document.getElementById("btnED"); //получаем кнопку активировать/деактивировать
+   btnED.addEventListener('click', function(){ //вешаем событие на нажатие html-кнопки
+      if (tg.MainButton.isActive){ //если кнопка показана 
+         tg.MainButton.setParams({"color": "#E0FFFF"}); //меняем цвет
+         tg.MainButton.disable() //скрываем кнопку 
+      }
+      else{ //иначе
+         tg.MainButton.setParams({"color": "#143F6B"}); //меняем цвет
+         tg.MainButton.enable() //показываем 
+      }
+   });
+
+   Telegram.WebApp.onEvent('mainButtonClicked', function(){
+      tg.sendData("some string that we need to send"); 
+      //при клике на основную кнопку отправляем данные в строковом виде
+   });
+
+
+   let usercard = document.getElementById("usercard"); //получаем блок usercard 
+
+   let profName = document.createElement('p'); //создаем параграф
+   profName.innerText = `${tg.initDataUnsafe.user.first_name}
+   ${tg.initDataUnsafe.user.last_name}
+   ${tg.initDataUnsafe.user.username} (${tg.initDataUnsafe.user.language_code})`;
+   //выдем имя, "фамилию", через тире username и код языка
+   usercard.appendChild(profName); //добавляем 
+
+   let userid = document.createElement('p'); //создаем еще параграф 
+   userid.innerText = `${tg.initDataUnsafe.user.id}`; //показываем user_id
+   usercard.appendChild(userid); //добавляем
+
+
+   //работает только в attachment menu
+   // let pic = document.createElement('img'); //создаем img
+   // pic.src = tg.initDataUnsafe.user.photo_url; //задаём src 
+   // usercard.appendChild(pic); //добавляем элемент в карточку 
+</script>
 </html>
